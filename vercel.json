@@ -1,0 +1,31 @@
+{
+  "rewrites": [
+    { "source": "/start-here",      "destination": "/start-here.html" },
+    { "source": "/visas",           "destination": "/pillar-visas.html" },
+    { "source": "/business-setup",  "destination": "/pillar-business.html" },
+    { "source": "/banking",         "destination": "/pillar-banking.html" },
+    { "source": "/finance",         "destination": "/pillar-banking.html" },
+    { "source": "/cost-of-living",  "destination": "/pillar-cost.html" },
+    { "source": "/about",           "destination": "/about.html" },
+    { "source": "/contact",         "destination": "/contact.html" },
+    { "source": "/privacy",         "destination": "/privacy.html" },
+    { "source": "/disclaimer",      "destination": "/disclaimer.html" }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "X-Frame-Options",        "value": "DENY" },
+        { "key": "X-XSS-Protection",       "value": "1; mode=block" },
+        { "key": "Referrer-Policy",        "value": "strict-origin-when-cross-origin" }
+      ]
+    },
+    {
+      "source": "/assets/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+      ]
+    }
+  ]
+}
