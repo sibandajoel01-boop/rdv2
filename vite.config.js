@@ -19,6 +19,7 @@ export default defineConfig({
         education:       resolve(__dirname, 'education.html'),
         legalCompliance: resolve(__dirname, 'legal-compliance.html'),
         dubaiVsUk:       resolve(__dirname, 'dubai-vs-uk.html'),
+        joey:            resolve(__dirname, 'joey.js'),
       },
     },
   },
