@@ -147,40 +147,70 @@ function injectStyles() {
     }
 
     #joey-toggle {
-      width: 62px;
-      height: 62px;
-      border-radius: 50%;
+      height: 52px;
+      padding: 0 20px 0 14px;
+      border-radius: 30px;
       background: #0B1F3A;
-      border: 2.5px solid #C9913A;
+      border: 2px solid #C9913A;
       cursor: pointer;
       display: flex;
       align-items: center;
-      justify-content: center;
+      gap: 10px;
       box-shadow: 0 4px 24px rgba(11,31,58,0.45);
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
       margin-left: auto;
       position: relative;
+      white-space: nowrap;
     }
     #joey-toggle:hover {
-      transform: scale(1.07);
+      transform: translateY(-2px);
       box-shadow: 0 8px 32px rgba(11,31,58,0.55);
+      background: #122947;
     }
-    #joey-toggle .joey-avatar-text {
+    .joey-toggle-avatar {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: #C9913A;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       font-family: Georgia, serif;
-      font-size: 1.5rem;
+      font-size: 0.95rem;
       font-weight: 700;
+      color: #0B1F3A;
+      flex-shrink: 0;
+    }
+    .joey-toggle-text {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .joey-toggle-name {
+      color: #fff;
+      font-size: 0.85rem;
+      font-weight: 600;
+      line-height: 1.2;
+    }
+    .joey-toggle-sub {
       color: #C9913A;
-      line-height: 1;
+      font-size: 0.7rem;
+      line-height: 1.2;
     }
     #joey-toggle .joey-close-icon {
       display: none;
       color: #C9913A;
-      font-size: 1.4rem;
-      font-weight: 300;
+      font-size: 1.2rem;
       line-height: 1;
+      margin: 0 auto;
     }
-    #joey-bubble.open #joey-toggle .joey-avatar-text { display: none; }
+    #joey-bubble.open #joey-toggle .joey-toggle-avatar,
+    #joey-bubble.open #joey-toggle .joey-toggle-text { display: none; }
     #joey-bubble.open #joey-toggle .joey-close-icon { display: block; }
+    #joey-bubble.open #joey-toggle {
+      padding: 0 18px;
+      justify-content: center;
+    }
 
     #joey-notification {
       position: absolute;
@@ -197,7 +227,7 @@ function injectStyles() {
 
     #joey-window {
       position: absolute;
-      bottom: 76px;
+      bottom: 66px;
       right: 0;
       width: 360px;
       max-height: 520px;
@@ -439,7 +469,11 @@ function injectHTML() {
       </div>
     </div>
     <button id="joey-toggle" aria-label="Chat with Joey">
-      <span class="joey-avatar-text">J</span>
+      <div class="joey-toggle-avatar">J</div>
+      <div class="joey-toggle-text">
+        <span class="joey-toggle-name">Ask Joey</span>
+        <span class="joey-toggle-sub">Dubai relocation guide</span>
+      </div>
       <span class="joey-close-icon">✕</span>
       <span id="joey-notification"></span>
     </button>
@@ -607,12 +641,6 @@ function saveMessages() {
 // ============================================================
 //  BOOT
 // ============================================================
-
-console.log('[Joey] Script loaded ✓');
-
-// Expose to global scope for onclick handlers (needed outside ES modules)
-window.joeySuggest = joeySuggest;
-
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', initJoey);
 } else {
