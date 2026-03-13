@@ -189,21 +189,19 @@ function injectStyles() {
     }
 
     #joey-toggle {
-      height: 52px;
-      padding: 0 20px;
-      border-radius: 999px;
+      width: 62px;
+      height: 62px;
+      border-radius: 50%;
       background: #0B1F3A;
       border: 2.5px solid #C9913A;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 10px;
       box-shadow: 0 4px 24px rgba(11,31,58,0.45);
       transition: transform 0.2s ease, box-shadow 0.2s ease;
       margin-left: auto;
       position: relative;
-      white-space: nowrap;
     }
     #joey-toggle:hover {
       transform: scale(1.07);
@@ -216,12 +214,6 @@ function injectStyles() {
       color: #C9913A;
       line-height: 1;
     }
-    #joey-toggle .joey-label-text {
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: #ffffff;
-      letter-spacing: 0.02em;
-    }
     #joey-toggle .joey-close-icon {
       display: none;
       color: #C9913A;
@@ -230,7 +222,6 @@ function injectStyles() {
       line-height: 1;
     }
     #joey-bubble.open #joey-toggle .joey-avatar-text { display: none; }
-    #joey-bubble.open #joey-toggle .joey-label-text { display: none; }
     #joey-bubble.open #joey-toggle .joey-close-icon { display: block; }
 
     #joey-notification {
@@ -491,7 +482,6 @@ function injectHTML() {
     </div>
     <button id="joey-toggle" aria-label="Chat with Joey">
       <span class="joey-avatar-text">J</span>
-      <span class="joey-label-text">Ask Joey</span>
       <span class="joey-close-icon">✕</span>
       <span id="joey-notification"></span>
     </button>
@@ -572,17 +562,12 @@ async function handleSend() {
   isTyping = true;
 
   try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
+    const response = await fetch('/api/chat', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': 'YOUR_API_KEY_HERE',
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-access': 'true'
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
         system: JOEY_SYSTEM_PROMPT,
         messages: messages
       })
