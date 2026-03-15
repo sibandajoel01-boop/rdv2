@@ -147,6 +147,96 @@ Always finish with the most relevant link from the site based on their situation
 
 If you don't know something specific, be honest and suggest they check the relevant guide page or contact the team.`;
 
+
+// ============================================================
+//  EMAILJS — Email capture after readiness score
+// ============================================================
+function loadEmailJS() {
+  if (document.getElementById('emailjs-sdk')) return;
+  const script = document.createElement('script');
+  script.id = 'emailjs-sdk';
+  script.src = 'https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js';
+  script.onload = () => emailjs.init('rEZ8uzxXWdDJTLRfO');
+  document.head.appendChild(script);
+}
+
+function detectScore(text) {
+  const match = text.match(/Readiness Score is (\d+)\/100/i);
+  return match ? parseInt(match[1]) : null;
+}
+
+function extractSummary(text) {
+  // Get first sentence after the score line
+  const lines = text.split('\n').filter(l => l.trim());
+  const scoreLine = lines.findIndex(l => /Readiness Score is/i.test(l));
+  if (scoreLine !== -1 && lines[scoreLine + 1]) return lines[scoreLine + 1].trim();
+  return text.substring(0, 200);
+}
+
+function extractNextSteps(text) {
+  const bullets = text.match(/[•\-\*]\s+.+/g);
+  if (bullets && bullets.length > 0) return bullets.join('\n');
+  return 'Check our full relocation guide at relocatedubaihub.com for your personalised next steps.';
+}
+
+function showEmailCapture(score, summary, nextSteps) {
+  const container = document.getElementById('joey-messages');
+  const existing = document.getElementById('joey-email-capture');
+  if (existing) return;
+
+  const div = document.createElement('div');
+  div.id = 'joey-email-capture';
+  div.style.cssText = 'background:#fff;border:1.5px solid #C9913A;border-radius:12px;padding:16px;margin-top:8px;';
+  div.innerHTML = `
+    <p style="margin:0 0 4px;font-size:0.8rem;font-weight:700;color:#0B1F3A;text-transform:uppercase;letter-spacing:0.06em;">Get Your Full Report</p>
+    <p style="margin:0 0 12px;font-size:0.82rem;color:#5A6A7A;line-height:1.5;">Enter your email and I will send you a personalised PDF report with your score, summary and next steps.</p>
+    <input id="joey-email-input" type="email" placeholder="your@email.com" style="width:100%;box-sizing:border-box;border:1.5px solid #E2E8F0;border-radius:8px;padding:9px 12px;font-size:0.85rem;outline:none;margin-bottom:8px;font-family:inherit;" />
+    <button id="joey-email-send" style="width:100%;background:#0B1F3A;color:#fff;border:none;border-radius:8px;padding:10px;font-size:0.85rem;font-weight:600;cursor:pointer;font-family:inherit;">Send My Report</button>
+    <p id="joey-email-status" style="margin:8px 0 0;font-size:0.78rem;text-align:center;color:#5A6A7A;"></p>
+  `;
+  container.appendChild(div);
+  scrollToBottom();
+
+  document.getElementById('joey-email-send').addEventListener('click', async () => {
+    const email = document.getElementById('joey-email-input').value.trim();
+    const status = document.getElementById('joey-email-status');
+    const btn = document.getElementById('joey-email-send');
+
+    if (!email || !email.includes('@')) {
+      status.textContent = 'Please enter a valid email address.';
+      status.style.color = '#e53e3e';
+      return;
+    }
+
+    btn.textContent = 'Sending...';
+    btn.disabled = true;
+    status.textContent = '';
+
+    try {
+      await emailjs.send('service_w5fq70e', 'template_1n6m0s2', {
+        user_email: email,
+        user_name: email.split('@')[0],
+        score: score,
+        score_summary: summary,
+        next_steps: nextSteps
+      });
+      status.textContent = 'Report sent! Check your inbox.';
+      status.style.color = '#2f855a';
+      btn.textContent = 'Sent!';
+      btn.style.background = '#2f855a';
+    } catch (err) {
+      status.textContent = 'Something went wrong. Please try again.';
+      status.style.color = '#e53e3e';
+      btn.textContent = 'Send My Report';
+      btn.disabled = false;
+    }
+  });
+
+  document.getElementById('joey-email-input').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') document.getElementById('joey-email-send').click();
+  });
+}
+
 // ============================================================
 //  STATE
 // ============================================================
@@ -164,6 +254,7 @@ function initJoey() {
     if (saved) messages = JSON.parse(saved);
   } catch(e) { messages = []; }
 
+  loadEmailJS();
   injectStyles();
   injectHTML();
   bindEvents();
@@ -189,19 +280,21 @@ function injectStyles() {
     }
 
     #joey-toggle {
-      width: 62px;
-      height: 62px;
-      border-radius: 50%;
+      height: 52px;
+      padding: 0 20px;
+      border-radius: 999px;
       background: #0B1F3A;
       border: 2.5px solid #C9913A;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
+      gap: 10px;
       box-shadow: 0 4px 24px rgba(11,31,58,0.45);
       transition: transform 0.2s ease, box-shadow 0.2s ease;
       margin-left: auto;
       position: relative;
+      white-space: nowrap;
     }
     #joey-toggle:hover {
       transform: scale(1.07);
@@ -214,6 +307,12 @@ function injectStyles() {
       color: #C9913A;
       line-height: 1;
     }
+    #joey-toggle .joey-label-text {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #ffffff;
+      letter-spacing: 0.02em;
+    }
     #joey-toggle .joey-close-icon {
       display: none;
       color: #C9913A;
@@ -222,6 +321,7 @@ function injectStyles() {
       line-height: 1;
     }
     #joey-bubble.open #joey-toggle .joey-avatar-text { display: none; }
+    #joey-bubble.open #joey-toggle .joey-label-text { display: none; }
     #joey-bubble.open #joey-toggle .joey-close-icon { display: block; }
 
     #joey-notification {
@@ -482,6 +582,7 @@ function injectHTML() {
     </div>
     <button id="joey-toggle" aria-label="Chat with Joey">
       <span class="joey-avatar-text">J</span>
+      <span class="joey-label-text">Ask Joey</span>
       <span class="joey-close-icon">✕</span>
       <span id="joey-notification"></span>
     </button>
@@ -564,13 +665,8 @@ async function handleSend() {
   try {
     const response = await fetch('/api/chat', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        system: JOEY_SYSTEM_PROMPT,
-        messages: messages
-      })
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ system: JOEY_SYSTEM_PROMPT, messages: messages })
     });
 
     const data = await response.json();
@@ -582,6 +678,18 @@ async function handleSend() {
     addMessage('joey', reply);
     messages.push({ role: 'assistant', content: reply });
     saveMessages();
+
+    // Detect readiness score and show email capture
+    const detectedScore = detectScore(reply);
+    if (detectedScore !== null) {
+      setTimeout(() => {
+        showEmailCapture(
+          detectedScore,
+          extractSummary(reply),
+          extractNextSteps(reply)
+        );
+      }, 600);
+    }
 
     // Show notification if chat is closed
     if (!isOpen) {
