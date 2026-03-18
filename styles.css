@@ -34,7 +34,7 @@
 
 /* ---------- Reset ---------- */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; font-size: 16px; }
+html { scroll-behavior: smooth; font-size: 16px; overflow-x: hidden; }
 body {
   font-family: var(--font-body);
   color: var(--text);
@@ -456,7 +456,8 @@ p:last-child { margin-bottom: 0; }
   display: flex; align-items: center; justify-content: center;
   font-size: 1.5rem;
 }
-.pillar-card h3 { margin: 0; font-size: 1.2rem; }
+.pillar-card h3 { margin: 0; font-size: 1.2rem; word-break: break-word; }
+.pillar-card { word-break: break-word; }
 .pillar-card p { color: var(--slate); font-size: .925rem; flex: 1; }
 
 /* ---------- SECTION HEADERS ---------- */
@@ -498,6 +499,15 @@ p:last-child { margin-bottom: 0; }
   background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 100%);
   display: flex; align-items: center; justify-content: center;
   font-size: 2.5rem;
+  overflow: hidden;
+  position: relative;
+}
+.guide-card-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
 }
 .guide-card-body { padding: 1.5rem; }
 .guide-tag {
@@ -661,6 +671,7 @@ p:last-child { margin-bottom: 0; }
 
 /* ---------- COMPARISON TABLE ---------- */
 .comparison-table {
+  min-width: 500px;
   width: 100%;
   border-collapse: collapse;
   margin: 1.5rem 0;
@@ -683,6 +694,7 @@ p:last-child { margin-bottom: 0; }
 .comparison-table .cross { color: #ef4444; }
 .comparison-table .note { color: var(--slate-light); font-size: .8rem; }
 .table-wrapper { overflow-x: auto; margin: 1.5rem 0; }
+.comparison-table-wrapper { overflow-x: auto; margin: 1.5rem 0; -webkit-overflow-scrolling: touch; }
 
 /* ---------- AFFILIATE / CTA BOXES ---------- */
 .affiliate-box {
@@ -869,12 +881,18 @@ p:last-child { margin-bottom: 0; }
   .nav-menu-inner { grid-template-columns: 1fr; gap: 0; }
   .pillars-grid { grid-template-columns: 1fr; }
   .guides-grid { grid-template-columns: 1fr; }
+  .guide-card-img { height: 140px; }
   .footer-grid { grid-template-columns: 1fr; }
   .footer-brand { grid-column: 1; }
   .footer-bottom { flex-direction: column; text-align: center; }
   .hero { padding: 4rem 0 3.5rem; }
   .hero-trust { gap: 1rem; }
   .section { padding: 3.5rem 0; }
+  .comparison-table-wrapper { margin: 1rem -1rem; padding: 0 1rem; }
+  .pillar-card { padding: 1.25rem; }
+  .pillar-card h3 { font-size: 1rem; }
+  .article-body { overflow-x: hidden; }
+  .content-with-sidebar { overflow-x: hidden; }
 }
 
 /* ---------- NEW COMPONENTS (v2) ---------- */
@@ -1323,4 +1341,19 @@ p:last-child { margin-bottom: 0; }
 }
 @media (max-width: 640px) {
   .reviews-grid { grid-template-columns: 1fr; }
+}
+/* ---------- MOBILE OVERFLOW HARD FIX ---------- */
+@media (max-width: 768px) {
+  * { max-width: 100%; }
+  body, html { overflow-x: hidden; width: 100%; }
+  .container { padding-inline: 1rem; width: 100%; box-sizing: border-box; }
+  img { max-width: 100%; height: auto; }
+  .info-box, .affiliate-box, .need-help-box, .toc, .sidebar-widget {
+    max-width: 100%; box-sizing: border-box; overflow: hidden; word-wrap: break-word;
+  }
+  p, li, h1, h2, h3, h4 { word-wrap: break-word; overflow-wrap: break-word; max-width: 100%; }
+  .comparison-table-wrapper { overflow-x: auto; max-width: 100%; display: block; -webkit-overflow-scrolling: touch; }
+  .comparison-table { min-width: 480px; }
+  .article-body, .content-with-sidebar, .section, .page-hero, .page-hero-img { max-width: 100vw; overflow-x: hidden; }
+  table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
 }
