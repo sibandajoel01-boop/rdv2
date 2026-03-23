@@ -663,10 +663,10 @@ async function handleSend() {
   isTyping = true;
 
   try {
-    const response = await fetch('/api/chat', {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ system: JOEY_SYSTEM_PROMPT, messages: messages })
+      headers: { 'Content-Type': 'application/json', 'x-api-key': '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', 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 1024, system: JOEY_SYSTEM_PROMPT, messages: messages })
     });
 
     const data = await response.json();
